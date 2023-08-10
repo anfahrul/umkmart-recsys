@@ -1,2 +1,11 @@
 pandas
--e .
+numpy
+seaborn
+matplotlib
+scikit-learn
+scipy
+Flask
+fuzzywuzzy
+setuptools==58.2.0
+# scikit-surprise
+# -e .
