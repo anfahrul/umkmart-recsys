@@ -1,10 +1,13 @@
 import os
 import pandas as pd
 import sys
+
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 from src.exception import CustomException
 from src.logger import logging
+from src.components.data_transformation import DataTransformation
+from src.components.data_transformation import DataTransformationConfig
 
 @dataclass
 class DataIngestionConfig:
@@ -39,9 +42,12 @@ class DataIngestion:
 
 if __name__ == "__main__":
     data_ingestion = DataIngestion()
-    train_data, test_data = data_ingestion.initiate_data_ingestion()
+    ratings_data, items_data = data_ingestion.initiate_data_ingestion()
 
-    # Continue with the next steps, such as data transformation and model training
+    data_transformation = DataTransformation()
+    transformed_ratings, transformed_items, item_user_matrix_pivot = data_transformation.initiate_data_transformation(ratings_data, items_data)
+
+    # Continue with the next steps, such as  model training
 
 
 
