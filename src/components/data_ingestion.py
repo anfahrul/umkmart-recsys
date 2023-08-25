@@ -8,6 +8,8 @@ from src.exception import CustomException
 from src.logger import logging
 from src.components.data_transformation import DataTransformation
 from src.components.data_transformation import DataTransformationConfig
+from src.components.model_trainer import ModelTrainerConfig
+from src.components.model_trainer import ModelTrainer
 
 @dataclass
 class DataIngestionConfig:
@@ -45,9 +47,10 @@ if __name__ == "__main__":
     ratings_data, items_data = data_ingestion.initiate_data_ingestion()
 
     data_transformation = DataTransformation()
-    transformed_ratings, transformed_items, item_user_matrix_pivot = data_transformation.initiate_data_transformation(ratings_data, items_data)
+    transformed_ratings, transformed_items, item_user_matrix = data_transformation.initiate_data_transformation(ratings_data, items_data)
 
-    # Continue with the next steps, such as  model training
+    modeltrainer=ModelTrainer()
+    modeltrainer.initiate_model_trainer(item_user_matrix)
 
 
 
