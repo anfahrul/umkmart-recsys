@@ -7,5 +7,6 @@ scipy
 Flask
 fuzzywuzzy
 setuptools==58.2.0
+flask_sqlalchemy
 # scikit-surprise
 # -e .

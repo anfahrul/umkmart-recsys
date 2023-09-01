@@ -1,28 +1,22 @@
 from flask import Flask, request, jsonify
-from src.pipeline.recommend_pipeline import RecommendPipeline
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost:3306/recsys'
+db = SQLAlchemy(app)
 
 @app.route("/")
 def hello_api():
     return {
         "app_name": "recSys App",
         "version": "v1.0.0",
-        "message": "Welcome to our recommendation system engine!"
+        "message": "Welcome to our recommendation engine!"
     }
 
-
-@app.route("/recommend", methods=['POST'])
-def recommend_api():
-    request_data = request.get_json()
-    user_id = request_data.get('user_id')
-    num_neighbors = request_data.get('num_neighbors')
-    num_items = request_data.get('num_items')
-
-    recommend_pipeline=RecommendPipeline()
-    results = recommend_pipeline.rating_predictor(user_id, num_neighbors, num_items)
-
-    return jsonify(data=results)
+from routes import product_bp, recommend_bp, rating_bp
+app.register_blueprint(product_bp)
+app.register_blueprint(recommend_bp)
+app.register_blueprint(rating_bp)
 
 
 if __name__=="__main__":
