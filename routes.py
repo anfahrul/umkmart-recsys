@@ -1,7 +1,8 @@
 # routes/user_routes.py (di dalam direktori routes)
 from flask import Blueprint
 from src.pipeline.recommend_pipeline import RecommendPipeline
-from src.components.data_ingestion import DataIngestion
+from src.components.data_ingestion_db import DataIngestionDB
+from src.components.data_transformation_db import DataTransformationDB
 from src.models.products import Product
 from src.models.ratings import Rating
 from flask import jsonify, request
@@ -12,14 +13,18 @@ product_bp = Blueprint('product_bp', __name__)
 rating_bp = Blueprint('rating_bp', __name__)
 
 
-@cf_updating_component_bp.route("/cf-updated-component", methods=['POST'])
+@cf_updating_component_bp.route("/cf-updating-component", methods=['POST'])
 def cf_preprocessing():
     # data ingestion
-    data_ingestion_result = DataIngestion()
+    data_ingestion_result = DataIngestionDB()
     ratings_df, products_df, users_df = data_ingestion_result.initiate_data_ingestion_db()
     
     # data transformation
+    data_transformation_result = DataTransformationDB()
+    matrix_path, items_path, users_path = data_transformation_result.initiate_data_transformation(ratings_df, products_df, users_df)
+
     # model training
+    
 
     data = {
         "data": {
