@@ -1,8 +1,9 @@
 # routes/user_routes.py (di dalam direktori routes)
 from flask import Blueprint
-from src.pipeline.recommend_pipeline import RecommendPipeline
+from src.pipeline.recommend_pipeline_db import RecommendPipelineDB
 from src.components.data_ingestion_db import DataIngestionDB
 from src.components.data_transformation_db import DataTransformationDB
+from src.components.model_trainer_db import ModelTrainerDB
 from src.models.products import Product
 from src.models.ratings import Rating
 from flask import jsonify, request
@@ -15,34 +16,41 @@ rating_bp = Blueprint('rating_bp', __name__)
 
 @cf_updating_component_bp.route("/cf-updating-component", methods=['POST'])
 def cf_preprocessing():
+    results = {}
+
     # data ingestion
     data_ingestion_result = DataIngestionDB()
     ratings_df, products_df, users_df = data_ingestion_result.initiate_data_ingestion_db()
+    ingestion = {}
+    ingestion['ratings_count'] = "{} row".format(len(ratings_df))
+    ingestion['users_count'] = "{} row".format(len(users_df))
+    ingestion['products_count'] = "{} row".format(len(products_df))
+    results['ingestion'] = ingestion
     
     # data transformation
     data_transformation_result = DataTransformationDB()
     matrix_path, items_path, users_path = data_transformation_result.initiate_data_transformation(ratings_df, products_df, users_df)
+    transformation = {}
+    transformation['matrix_path'] = "{}".format(matrix_path)
+    transformation['items_path'] = "{}".format(items_path)
+    transformation['users_path'] = "{}".format(users_path)
+    results['transformation'] = transformation
 
     # model training
-    
+    modeltrainer=ModelTrainerDB()
+    model_path = modeltrainer.initiate_model_trainer(matrix_path, 5)
+    model = {}
+    model['model_path'] = "{}".format(model_path)
+    results['model'] = model
 
-    data = {
-        "data": {
-            "ingestion": {
-                "ratings_count": "{} row".format(len(ratings_df)),
-                "users_count": "{} row".format(len(users_df)),
-                "products_count": "{} row".format(len(products_df))
-            },
-            "transformation": {"status":"soon"},
-            "model": {"status":"soon"},
-            "evaluation": {
-                "MAE":"soon",
-                "RMSE":"soon",
-                "MAP":"soon",
-            }
-        }
-    }
-    return jsonify(data)
+    # evaluation score
+    score = {}
+    score['MAE'] = "{}".format("soon")
+    score['RMSE'] = "{}".format("soon")
+    score['MAP'] =  "{}".format("soon")
+    results['evaluation_score'] = score
+
+    return jsonify(data=results)
 
 
 @cf_recommend_bp.route("/cf-recommend", methods=['POST'])
@@ -52,9 +60,9 @@ def recommend_api():
     num_neighbors = request_data.get('num_neighbors')
     num_items = request_data.get('num_items')
 
-    recommend_pipeline=RecommendPipeline()
+    recommend_pipeline=RecommendPipelineDB()
     results = recommend_pipeline.rating_predictor(user_id, num_neighbors, num_items)
-    
+
     return jsonify(data=results)
 
 

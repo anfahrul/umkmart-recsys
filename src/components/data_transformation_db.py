@@ -96,7 +96,8 @@ class DataTransformationDB:
             # is_coloumns_used_ratings_df = self.drop_unused_columns(filtered_users_rating_df)
             # transformed_ratings, transformed_items = self.rename_columns(is_coloumns_used_ratings_df, items_df)
             
-            item_user_matrix = self.pivot_to_matrix(filtered_users_rating_df)
+            # item_user_matrix = self.pivot_to_matrix(filtered_users_rating_df)
+            item_user_matrix = self.pivot_to_matrix(ratings_df)
             logging.info("Transformer process completed")
 
             save_object(
