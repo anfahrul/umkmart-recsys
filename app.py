@@ -13,9 +13,10 @@ def hello_api():
         "message": "Welcome to our recommendation engine!"
     }
 
-from routes import product_bp, recommend_bp, rating_bp
+from routes import product_bp, rating_bp, cf_recommend_bp, cf_updating_component_bp
+app.register_blueprint(cf_updating_component_bp)
+app.register_blueprint(cf_recommend_bp)
 app.register_blueprint(product_bp)
-app.register_blueprint(recommend_bp)
 app.register_blueprint(rating_bp)
 
 
